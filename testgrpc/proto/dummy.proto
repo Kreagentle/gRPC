@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package test;
+
+option go_package = "github.com/Kreagentle/gRPC";
+
+message TestRequest {
+    string transaction_request = 1;
+}
+
+message TestResponse {
+    string transaction_response = 1;
+}
+
+service Server {
+  rpc Test(TestRequest) returns (TestResponse);
+}
