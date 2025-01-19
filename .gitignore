@@ -2,6 +2,8 @@
 !*/
 
 !*.go
+!*.proto
 !*.md
 !go.mod
 !go.sum
+!Makefile
