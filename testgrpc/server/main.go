@@ -5,12 +5,14 @@ import (
 	"net"
 	
 	pb "github.com/Kreagentle/gRPC/testgrpc/proto"
+
+	"google.golang.org/grpc"
 )
 
 const address = "0.0.0.0:8085"
 
 type Server struct {
-	pb.Server
+	pb.ServerServer
 }
 
 func main() {
@@ -19,10 +21,10 @@ func main() {
 		log.Fatalf("Failed to listen because of: %v\n", err)
 	}
 
-	log.Println("Listen on: %s\n", address)
+	log.Printf("Listen on: %s\n", address)
 
 	news := grpc.NewServer()
-	err = s.Serve(listen)
+	err = news.Serve(listen)
 	if err != nil {
 		log.Fatalf("Failed to run gRPC server because of: %v\n", err)
 	}
