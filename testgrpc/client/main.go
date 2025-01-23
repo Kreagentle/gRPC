@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	pb "github.com/Kreagentle/gRPC/testgrpc/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -22,4 +23,7 @@ func main() {
 	}(connection)
 
 	log.Printf("Connected to: %s\n", address)
+
+	client := pb.NewServerClient(connection)
+	SendTest(client)
 }
