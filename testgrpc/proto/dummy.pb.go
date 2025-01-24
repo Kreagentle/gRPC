@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.3
 // 	protoc        v5.29.3
-// source: dummy.proto
+// source: calculator.proto
 
 package gRPC
 

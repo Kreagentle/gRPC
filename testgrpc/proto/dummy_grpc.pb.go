@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.3
-// source: dummy.proto
+// source: calculator.proto
 
 package gRPC
 
@@ -117,5 +117,5 @@ var Server_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "dummy.proto",
+	Metadata: "calculator.proto",
 }
