@@ -4,6 +4,7 @@
 !*.go
 !*.proto
 !*.md
+!*.png
 !go.mod
 !go.sum
 !Makefile
