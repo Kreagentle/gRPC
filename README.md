@@ -22,3 +22,4 @@ Implementation of the calculator service, where the server sends two numbers usi
 ### Server Logs
 ![Calculator Server Logs](./images/calculateserver.png)
 
+# gRPC Server streaming

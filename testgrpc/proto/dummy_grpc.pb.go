@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.3
-// source: calculator.proto
+// source: dummy.proto
 
 package gRPC
 
@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Server_Test_FullMethodName = "/test.Server/Test"
+	Server_Test_FullMethodName         = "/test.Server/Test"
+	Server_TestFewTimes_FullMethodName = "/test.Server/TestFewTimes"
 )
 
 // ServerClient is the client API for Server service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServerClient interface {
 	Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error)
+	TestFewTimes(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[TestResponse], error)
 }
 
 type serverClient struct {
@@ -47,11 +49,31 @@ func (c *serverClient) Test(ctx context.Context, in *TestRequest, opts ...grpc.C
 	return out, nil
 }
 
+func (c *serverClient) TestFewTimes(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[TestResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &Server_ServiceDesc.Streams[0], Server_TestFewTimes_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[TestRequest, TestResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Server_TestFewTimesClient = grpc.ServerStreamingClient[TestResponse]
+
 // ServerServer is the server API for Server service.
 // All implementations must embed UnimplementedServerServer
 // for forward compatibility.
 type ServerServer interface {
 	Test(context.Context, *TestRequest) (*TestResponse, error)
+	TestFewTimes(*TestRequest, grpc.ServerStreamingServer[TestResponse]) error
 	mustEmbedUnimplementedServerServer()
 }
 
@@ -64,6 +86,9 @@ type UnimplementedServerServer struct{}
 
 func (UnimplementedServerServer) Test(context.Context, *TestRequest) (*TestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Test not implemented")
+}
+func (UnimplementedServerServer) TestFewTimes(*TestRequest, grpc.ServerStreamingServer[TestResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method TestFewTimes not implemented")
 }
 func (UnimplementedServerServer) mustEmbedUnimplementedServerServer() {}
 func (UnimplementedServerServer) testEmbeddedByValue()                {}
@@ -104,6 +129,17 @@ func _Server_Test_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Server_TestFewTimes_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(TestRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ServerServer).TestFewTimes(m, &grpc.GenericServerStream[TestRequest, TestResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Server_TestFewTimesServer = grpc.ServerStreamingServer[TestResponse]
+
 // Server_ServiceDesc is the grpc.ServiceDesc for Server service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -116,6 +152,12 @@ var Server_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Server_Test_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "calculator.proto",
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "TestFewTimes",
+			Handler:       _Server_TestFewTimes_Handler,
+			ServerStreams: true,
+		},
+	},
+	Metadata: "dummy.proto",
 }

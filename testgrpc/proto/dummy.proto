@@ -14,4 +14,5 @@ message TestResponse {
 
 service Server {
   rpc Test(TestRequest) returns (TestResponse);
+  rpc TestFewTimes(TestRequest) returns (stream TestResponse);
 }
