@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Server_Test_FullMethodName         = "/test.Server/Test"
-	Server_TestFewTimes_FullMethodName = "/test.Server/TestFewTimes"
+	Server_Test_FullMethodName            = "/test.Server/Test"
+	Server_TestFewTimes_FullMethodName    = "/test.Server/TestFewTimes"
+	Server_TestFewRequests_FullMethodName = "/test.Server/TestFewRequests"
 )
 
 // ServerClient is the client API for Server service.
@@ -29,6 +30,7 @@ const (
 type ServerClient interface {
 	Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error)
 	TestFewTimes(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[TestResponse], error)
+	TestFewRequests(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[TestRequest, TestResponse], error)
 }
 
 type serverClient struct {
@@ -68,12 +70,26 @@ func (c *serverClient) TestFewTimes(ctx context.Context, in *TestRequest, opts .
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Server_TestFewTimesClient = grpc.ServerStreamingClient[TestResponse]
 
+func (c *serverClient) TestFewRequests(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[TestRequest, TestResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &Server_ServiceDesc.Streams[1], Server_TestFewRequests_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[TestRequest, TestResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Server_TestFewRequestsClient = grpc.ClientStreamingClient[TestRequest, TestResponse]
+
 // ServerServer is the server API for Server service.
 // All implementations must embed UnimplementedServerServer
 // for forward compatibility.
 type ServerServer interface {
 	Test(context.Context, *TestRequest) (*TestResponse, error)
 	TestFewTimes(*TestRequest, grpc.ServerStreamingServer[TestResponse]) error
+	TestFewRequests(grpc.ClientStreamingServer[TestRequest, TestResponse]) error
 	mustEmbedUnimplementedServerServer()
 }
 
@@ -89,6 +105,9 @@ func (UnimplementedServerServer) Test(context.Context, *TestRequest) (*TestRespo
 }
 func (UnimplementedServerServer) TestFewTimes(*TestRequest, grpc.ServerStreamingServer[TestResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method TestFewTimes not implemented")
+}
+func (UnimplementedServerServer) TestFewRequests(grpc.ClientStreamingServer[TestRequest, TestResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method TestFewRequests not implemented")
 }
 func (UnimplementedServerServer) mustEmbedUnimplementedServerServer() {}
 func (UnimplementedServerServer) testEmbeddedByValue()                {}
@@ -140,6 +159,13 @@ func _Server_TestFewTimes_Handler(srv interface{}, stream grpc.ServerStream) err
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Server_TestFewTimesServer = grpc.ServerStreamingServer[TestResponse]
 
+func _Server_TestFewRequests_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ServerServer).TestFewRequests(&grpc.GenericServerStream[TestRequest, TestResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Server_TestFewRequestsServer = grpc.ClientStreamingServer[TestRequest, TestResponse]
+
 // Server_ServiceDesc is the grpc.ServiceDesc for Server service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -157,6 +183,11 @@ var Server_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "TestFewTimes",
 			Handler:       _Server_TestFewTimes_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "TestFewRequests",
+			Handler:       _Server_TestFewRequests_Handler,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "dummy.proto",
