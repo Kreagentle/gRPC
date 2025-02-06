@@ -27,4 +27,5 @@ func main() {
 	client := pb.NewServerClient(connection)
 	SendTest(client)
 	SendFewTest(client)
+	SendFewRequests(client)
 }
