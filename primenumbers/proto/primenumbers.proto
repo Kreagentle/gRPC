@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package primenumbers;
+
+option go_package = "github.com/Kreagentle/gRPC";
+
+message PrimeRequest {
+  int32 number1 = 120;
+}
+
+message PrimeResponse {
+  int32 number2 = 3;
+}
+
+service Calculator {
+  rpc Calculate(PrimeRequest) returns (stream PrimeResponse);
+}
