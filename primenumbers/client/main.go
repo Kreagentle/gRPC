@@ -1,11 +1,12 @@
-package client
+package main
 
 import (
 	"log"
 
-	pb "github.com/Kreagentle/gRPC/primenumbers/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	pb "github.com/Kreagentle/gRPC/primenumbers/proto"
 )
 
 const address = "0.0.0.0:8085"

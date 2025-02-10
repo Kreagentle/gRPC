@@ -4,9 +4,9 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/Kreagentle/gRPC/calculator/proto"
-
 	"google.golang.org/grpc"
+
+	pb "github.com/Kreagentle/gRPC/calculator/proto"
 )
 
 const address = "0.0.0.0:8085"
