@@ -5,11 +5,11 @@ package primenumbers;
 option go_package = "github.com/Kreagentle/gRPC";
 
 message PrimeRequest {
-  string number1 = 120;
+  int64 number1 = 120;
 }
 
 message PrimeResponse {
-  string number2 = 3;
+  int64 number2 = 3;
 }
 
 service Calculator {
