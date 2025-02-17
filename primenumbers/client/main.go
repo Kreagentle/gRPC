@@ -25,5 +25,7 @@ func main() {
 
 	log.Printf("Connected to: %s\n", address)
 
-	_ = pb.NewCalculatorClient(connection)
+	client := pb.NewCalculatorClient(connection)
+
+	CalculatePrimes(client)
 }
