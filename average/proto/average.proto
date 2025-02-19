@@ -1,1 +1,17 @@
-package proto
+syntax = "proto3";
+
+package calculator;
+
+option go_package = "github.com/Kreagentle/gRPC";
+
+message AvgRequest {
+	int32 number = 1;
+}
+
+message AvgResponse {
+	double number2 = 1;
+}
+
+service Calculator {
+	rpc Calculate(stream AvgRequest) returns (AvgResponse);
+}
