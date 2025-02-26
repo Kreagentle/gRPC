@@ -8,19 +8,19 @@ import (
 	pb "github.com/Kreagentle/gRPC/average/proto"
 )
 
-func SendFewRequests(client pb.CalculatorClient) {
-	fmt.Println("Send few requests is invoked")
+func AvrCalculate(client pb.CalculatorClient) {
+	fmt.Println("Avr calculate is invoked")
 
-	request := []*pb.TestRequest{{TransactionRequest: "1"}, {TransactionRequest: "2"}, {TransactionRequest: "3"}}
+	request := []int32{1, 2, 3, 4, 5}
 
-	stream, err := client.TestFewRequests(context.Background())
+	stream, err := client.Calculate(context.Background())
 	if err != nil {
 		log.Fatalf("error is %v", err)
 	}
 
 	for _, req := range request {
 		fmt.Printf("Sending request %v\n\n", req)
-		err = stream.Send(req)
+		err = stream.Send(&pb.AvgRequest{Number: req})
 		if err != nil {
 			log.Fatalf("error while writing into the stream %v", err)
 		}
@@ -30,5 +30,5 @@ func SendFewRequests(client pb.CalculatorClient) {
 	if err != nil {
 		log.Fatalf("error while wrinting response into the stream %v", err)
 	}
-	log.Printf("The transaction request is %v", result.TransactionResponse)
+	log.Printf("The transaction request is %v", result.Number2)
 }

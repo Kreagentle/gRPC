@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 
@@ -23,6 +24,7 @@ func (s *Server) AvgCalculate(stream pb.Calculator_CalculateServer) error {
 			log.Fatalf("cant receive the message in the server side %v", err)
 		}
 
+		fmt.Printf("Receiving request %v\n\n", rec.Number)
 		sum += rec.Number
 		count++
 	}
