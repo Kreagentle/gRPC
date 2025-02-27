@@ -25,5 +25,5 @@ func main() {
 	log.Printf("Connected to: %s\n", address)
 
 	client := pb.NewCalculatorClient(connection)
-	// AverageCalculate(client)
+	AvrCalculate(client)
 }
