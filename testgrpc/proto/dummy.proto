@@ -16,4 +16,5 @@ service Server {
   rpc Test(TestRequest) returns (TestResponse);
   rpc TestFewTimes(TestRequest) returns (stream TestResponse);
   rpc TestFewRequests(stream TestRequest) returns (TestResponse);
+  rpc TestBiDirectional(stream TestRequest) returns (stream TestResponse);
 }
